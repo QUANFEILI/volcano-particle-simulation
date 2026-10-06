@@ -7,14 +7,14 @@ var positionBuffer;
 var velocityBuffer;
 var accelerationBuffer;
 var colorBuffer;
-var phaseBuffer;
+var startTimeBuffer;
 var typeBuffer;
 
 var positionLoc;
 var velocityLoc;
 var accelerationLoc;
 var colorLoc;
-var phaseLoc;
+var startTimeLoc;
 var typeLoc;
 
 var timeLoc;
@@ -24,14 +24,16 @@ var positions = [];
 var velocities = [];
 var accelerations = [];
 var colors = [];
-var phases = [];
+var startTimes = [];
 var types = [];
 
-var started = false;
-var startTime;
+var startSimulation = false;
 
-var streamerCount = 500;
-var ballisticCount = 250;
+var streamerCount = 600;
+var ballisticCount = 300;
+var volcanoCount = 4;
+
+var startTime;
 
 
 // ========================================
@@ -60,33 +62,28 @@ window.onload = function init()
     velocityBuffer = gl.createBuffer();
     accelerationBuffer = gl.createBuffer();
     colorBuffer = gl.createBuffer();
-    phaseBuffer = gl.createBuffer();
+    startTimeBuffer = gl.createBuffer();
     typeBuffer = gl.createBuffer();
 
     createVolcano();
     createParticles();
     uploadData();
 
-    document.getElementById("startButton").onclick =
-        startSimulation;
+    document.getElementById("startButton").onclick = function()
+    {
+        startSimulation = true;
+        startTime = performance.now();
+
+        gl.clearColor(
+            0.65,
+            0.65,
+            0.65,
+            1.0
+        );
+    };
 
     render();
 };
-
-
-// ========================================
-// Start Simulation
-// ========================================
-
-function startSimulation()
-{
-    started = true;
-    startTime = performance.now();
-
-    gl.clearColor(
-        0.65, 0.65, 0.65, 1.0
-    );
-}
 
 
 // ========================================
@@ -95,14 +92,17 @@ function startSimulation()
 
 function createVolcano()
 {
+    // World coordinates.
+    // The mountain has a flat top like the demo.
+
     positions.push(
-        -1.0, -1.0,
-        -0.10, 0.0,
-         0.10, 0.0,
-         1.0, -1.0
+        -4.0, -4.0,
+        -0.35,  0.0,
+         0.35,  0.0,
+         4.0, -4.0
     );
 
-    for (var i = 0; i < 4; i++)
+    for (var i = 0; i < volcanoCount; i++)
     {
         velocities.push(0.0, 0.0);
         accelerations.push(0.0, 0.0);
@@ -111,7 +111,7 @@ function createVolcano()
             1.0, 0.0, 0.0, 1.0
         );
 
-        phases.push(0.0);
+        startTimes.push(0.0);
         types.push(0.0);
     }
 }
@@ -129,30 +129,30 @@ function createParticles()
 
     for (var i = 0; i < streamerCount; i++)
     {
-        var sx =
-            (Math.random() - 0.5) * 0.18;
-
-        var sy = 0.0;
-
-        var svx =
-            (Math.random() - 0.5) * 0.08;
-
-        var svy =
-            0.22 + Math.random() * 0.18;
-
-        positions.push(sx, sy);
-
-        velocities.push(svx, svy);
-
-        // Streamer particles have no acceleration.
-        accelerations.push(0.0, 0.0);
-
-        colors.push(
-            0.75, 0.75, 0.75, 1.0
+        positions.push(
+            randomRange(-0.20, 0.20),
+            0.0
         );
 
-        phases.push(
-            Math.random() * 5.0
+        velocities.push(
+            randomRange(-0.15, 0.15),
+            randomRange(0.65, 1.05)
+        );
+
+        // Streamer particles have no acceleration.
+        accelerations.push(
+            0.0, 0.0
+        );
+
+        colors.push(
+            randomRange(0.65, 0.95),
+            randomRange(0.65, 0.95),
+            randomRange(0.65, 0.95),
+            1.0
+        );
+
+        startTimes.push(
+            randomRange(0.0, 4.0)
         );
 
         types.push(1.0);
@@ -165,24 +165,22 @@ function createParticles()
 
     for (var j = 0; j < ballisticCount; j++)
     {
-        var bx =
-            (Math.random() - 0.5) * 0.18;
+        positions.push(
+            randomRange(-0.15, 0.15),
+            0.0
+        );
 
-        var by = 0.0;
+        velocities.push(
+            randomRange(-1.7, 1.7),
+            randomRange(1.0, 2.2)
+        );
 
-        var bvx =
-            (Math.random() - 0.5) * 0.9;
+        // Gravity.
+        accelerations.push(
+            0.0, -1.0
+        );
 
-        var bvy =
-            0.55 + Math.random() * 0.65;
-
-        positions.push(bx, by);
-
-        velocities.push(bvx, bvy);
-
-        // Gravity
-        accelerations.push(0.0, -0.65);
-
+        // Random colors like the demo.
         colors.push(
             Math.random(),
             Math.random(),
@@ -190,12 +188,22 @@ function createParticles()
             1.0
         );
 
-        phases.push(
-            Math.random() * 3.0
+        startTimes.push(
+            randomRange(0.0, 3.0)
         );
 
         types.push(2.0);
     }
+}
+
+
+// ========================================
+// Random number
+// ========================================
+
+function randomRange(min, max)
+{
+    return min + Math.random() * (max - min);
 }
 
 
@@ -255,12 +263,12 @@ function uploadData()
 
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
-        phaseBuffer
+        startTimeBuffer
     );
 
     gl.bufferData(
         gl.ARRAY_BUFFER,
-        new Float32Array(phases),
+        new Float32Array(startTimes),
         gl.STATIC_DRAW
     );
 
@@ -284,9 +292,11 @@ function uploadData()
 
 function render()
 {
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(
+        gl.COLOR_BUFFER_BIT
+    );
 
-    if (started)
+    if (startSimulation)
     {
         var time =
             (performance.now() - startTime) / 1000.0;
@@ -295,8 +305,21 @@ function render()
             timeLoc,
             time
         );
+    }
+    else
+    {
+        gl.uniform1f(
+            timeLoc,
+            0.0
+        );
+    }
 
-        drawVolcano();
+    setAttributes();
+
+    drawVolcano();
+
+    if (startSimulation)
+    {
         drawParticles();
     }
 
@@ -313,7 +336,7 @@ function drawVolcano()
     gl.drawArrays(
         gl.TRIANGLE_STRIP,
         0,
-        4
+        volcanoCount
     );
 }
 
@@ -326,7 +349,7 @@ function drawParticles()
 {
     gl.drawArrays(
         gl.POINTS,
-        4,
+        volcanoCount,
         streamerCount + ballisticCount
     );
 }
@@ -408,11 +431,11 @@ function setAttributes()
 
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
-        phaseBuffer
+        startTimeBuffer
     );
 
     gl.vertexAttribPointer(
-        phaseLoc,
+        startTimeLoc,
         1,
         gl.FLOAT,
         false,
@@ -420,7 +443,7 @@ function setAttributes()
         0
     );
 
-    gl.enableVertexAttribArray(phaseLoc);
+    gl.enableVertexAttribArray(startTimeLoc);
 
 
     gl.bindBuffer(
@@ -453,7 +476,7 @@ function initShaders()
         attribute vec2 vAcceleration;
 
         attribute vec4 vColor;
-        attribute float vPhase;
+        attribute float vStartTime;
         attribute float vType;
 
         uniform float uTime;
@@ -467,22 +490,11 @@ function initShaders()
 
             if (vType > 0.5)
             {
-                float t;
-
-                if (vType < 1.5)
-                {
-                    t = mod(
-                        uTime + vPhase,
-                        4.5
+                float t =
+                    mod(
+                        uTime + vStartTime,
+                        4.0
                     );
-                }
-                else
-                {
-                    t = mod(
-                        uTime + vPhase,
-                        3.0
-                    );
-                }
 
                 position =
                     vPosition
@@ -494,23 +506,11 @@ function initShaders()
                 uMatrix *
                 vec4(position, 0.0, 1.0);
 
-            if (vType == 1.0)
-            {
-                gl_PointSize = 4.0;
-            }
-            else if (vType == 2.0)
-            {
-                gl_PointSize = 4.0;
-            }
-            else
-            {
-                gl_PointSize = 1.0;
-            }
+            gl_PointSize = 4.0;
 
             fColor = vColor;
         }
     `;
-
 
     var fragmentShaderSource = `
         precision mediump float;
@@ -522,7 +522,6 @@ function initShaders()
             gl_FragColor = fColor;
         }
     `;
-
 
     var vertexShader =
         compileShader(
@@ -577,10 +576,10 @@ function initShaders()
             "vColor"
         );
 
-    phaseLoc =
+    startTimeLoc =
         gl.getAttribLocation(
             program,
-            "vPhase"
+            "vStartTime"
         );
 
     typeLoc =
@@ -588,6 +587,7 @@ function initShaders()
             program,
             "vType"
         );
+
 
     timeLoc =
         gl.getUniformLocation(
@@ -602,7 +602,13 @@ function initShaders()
         );
 
 
-    var matrix = mat4();
+    // World coordinates to NDC.
+    var matrix =
+        scale4x4(
+            0.25,
+            0.25,
+            1.0
+        );
 
     gl.uniformMatrix4fv(
         matrixLoc,
@@ -641,11 +647,4 @@ function compileShader(type, source)
     }
 
     return shader;
-};
-
-
-// ========================================
-// Finish attribute setup after shaders
-// ========================================
-
-var oldInit = window.onload;
+}
