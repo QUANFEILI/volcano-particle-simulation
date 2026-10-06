@@ -92,9 +92,6 @@ window.onload = function init()
 
 function createVolcano()
 {
-    // World coordinates.
-    // The mountain has a flat top like the demo.
-
     positions.push(
         -4.0, -4.0,
         -0.35,  0.0,
@@ -123,9 +120,7 @@ function createVolcano()
 
 function createParticles()
 {
-    // ----------------------------------------
     // Streamer particles
-    // ----------------------------------------
 
     for (var i = 0; i < streamerCount; i++)
     {
@@ -139,7 +134,6 @@ function createParticles()
             randomRange(0.65, 1.05)
         );
 
-        // Streamer particles have no acceleration.
         accelerations.push(
             0.0, 0.0
         );
@@ -159,9 +153,7 @@ function createParticles()
     }
 
 
-    // ----------------------------------------
     // Ballistic particles
-    // ----------------------------------------
 
     for (var j = 0; j < ballisticCount; j++)
     {
@@ -175,12 +167,10 @@ function createParticles()
             randomRange(1.0, 2.2)
         );
 
-        // Gravity.
         accelerations.push(
             0.0, -1.0
         );
 
-        // Random colors like the demo.
         colors.push(
             Math.random(),
             Math.random(),
@@ -305,21 +295,10 @@ function render()
             timeLoc,
             time
         );
-    }
-    else
-    {
-        gl.uniform1f(
-            timeLoc,
-            0.0
-        );
-    }
 
-    setAttributes();
+        setAttributes();
 
-    drawVolcano();
-
-    if (startSimulation)
-    {
+        drawVolcano();
         drawParticles();
     }
 
@@ -512,6 +491,7 @@ function initShaders()
         }
     `;
 
+
     var fragmentShaderSource = `
         precision mediump float;
 
@@ -522,6 +502,7 @@ function initShaders()
             gl_FragColor = fColor;
         }
     `;
+
 
     var vertexShader =
         compileShader(
@@ -602,7 +583,6 @@ function initShaders()
         );
 
 
-    // World coordinates to NDC.
     var matrix =
         scale4x4(
             0.25,
