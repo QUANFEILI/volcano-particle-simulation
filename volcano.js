@@ -94,8 +94,8 @@ function createVolcano()
 {
     positions.push(
         -4.0, -4.0,
-        -0.35,  0.0,
-         0.35,  0.0,
+        -0.20,  0.0,
+         0.20,  0.0,
          4.0, -4.0
     );
 
@@ -120,7 +120,9 @@ function createVolcano()
 
 function createParticles()
 {
+    // ----------------------------------------
     // Streamer particles
+    // ----------------------------------------
 
     for (var i = 0; i < streamerCount; i++)
     {
@@ -153,7 +155,9 @@ function createParticles()
     }
 
 
+    // ----------------------------------------
     // Ballistic particles
+    // ----------------------------------------
 
     for (var j = 0; j < ballisticCount; j++)
     {
@@ -214,7 +218,6 @@ function uploadData()
         gl.STATIC_DRAW
     );
 
-
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
         velocityBuffer
@@ -225,7 +228,6 @@ function uploadData()
         new Float32Array(velocities),
         gl.STATIC_DRAW
     );
-
 
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
@@ -238,7 +240,6 @@ function uploadData()
         gl.STATIC_DRAW
     );
 
-
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
         colorBuffer
@@ -250,7 +251,6 @@ function uploadData()
         gl.STATIC_DRAW
     );
 
-
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
         startTimeBuffer
@@ -261,7 +261,6 @@ function uploadData()
         new Float32Array(startTimes),
         gl.STATIC_DRAW
     );
-
 
     gl.bindBuffer(
         gl.ARRAY_BUFFER,
@@ -282,19 +281,14 @@ function uploadData()
 
 function render()
 {
-    gl.clear(
-        gl.COLOR_BUFFER_BIT
-    );
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
     if (startSimulation)
     {
         var time =
             (performance.now() - startTime) / 1000.0;
 
-        gl.uniform1f(
-            timeLoc,
-            time
-        );
+        gl.uniform1f(timeLoc, time);
 
         setAttributes();
 
@@ -491,7 +485,6 @@ function initShaders()
         }
     `;
 
-
     var fragmentShaderSource = `
         precision mediump float;
 
@@ -502,7 +495,6 @@ function initShaders()
             gl_FragColor = fColor;
         }
     `;
-
 
     var vertexShader =
         compileShader(
@@ -569,7 +561,6 @@ function initShaders()
             "vType"
         );
 
-
     timeLoc =
         gl.getUniformLocation(
             program,
@@ -583,6 +574,7 @@ function initShaders()
         );
 
 
+    // World coordinates to NDC.
     var matrix =
         scale4x4(
             0.25,
