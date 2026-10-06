@@ -1,20 +1,24 @@
 # Volcano Particle Simulation
 
-A WebGL-based volcano simulation using particle systems.
+A simple WebGL volcano eruption simulation based on the 2D graphics particle-system project.
 
-## Description
+Click **Start Simulation** to display the volcano and start the continuous eruption.
 
-This project simulates a volcano eruption with two types of particles:
+## Features
 
-- Streamer particles that move upward.
-- Ballistic particles that move according to velocity and gravity.
-
-The particle motion is calculated in the vertex shader.
+- Red volcano shape
+- Gray simulation background
+- Streamer smoke particles
+- Ballistic particles
+- Random particle motion and colors
+- Velocity and gravitational acceleration
+- Particle motion calculated in the vertex shader
+- World-coordinate to NDC transformation in the shader
 
 ## Technologies
 
 - JavaScript
 - WebGL
 - GLSL
+- 2D Graphics
 - Particle Systems
-- 2D Transformations
