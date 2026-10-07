@@ -31,7 +31,7 @@ var startSimulation = false;
 
 var streamerCount = 900;
 var ballisticCount = 700;
-var volcanoCount = 9;
+var volcanoCount = 5;
 
 var startTime;
 
@@ -94,31 +94,23 @@ function createVolcano()
 {
     // Center of the mountain.
     positions.push(
-         0.0, -4.0
+        0.0, -4.0
     );
 
     colors.push(
         0.65, 0.0, 0.0, 1.0
     );
 
-    // Mountain outline.
+    // Simple straight-line mountain shape.
     positions.push(
         -4.0, -4.0,
-        -2.7, -2.8,
-        -1.7, -1.6,
-        -0.75, -0.35,
-         0.75, -0.35,
-         1.7, -1.6,
-         2.7, -2.8,
+        -0.8,  0.0,
+         0.8,  0.0,
          4.0, -4.0
     );
 
-    // Use one solid color for the whole volcano.
+    // One solid color for the whole volcano.
     colors.push(
-        0.65, 0.0, 0.0, 1.0,
-        0.65, 0.0, 0.0, 1.0,
-        0.65, 0.0, 0.0, 1.0,
-        0.65, 0.0, 0.0, 1.0,
         0.65, 0.0, 0.0, 1.0,
         0.65, 0.0, 0.0, 1.0,
         0.65, 0.0, 0.0, 1.0,
