@@ -31,7 +31,7 @@ var startSimulation = false;
 
 var streamerCount = 900;
 var ballisticCount = 700;
-var volcanoCount = 8;
+var volcanoCount = 9;
 
 var startTime;
 
@@ -92,29 +92,42 @@ window.onload = function init()
 
 function createVolcano()
 {
+    // Center of the mountain.
+    positions.push(
+         0.0, -4.0
+    );
+
+    colors.push(
+        0.65, 0.0, 0.0, 1.0
+    );
+
+    // Mountain outline.
     positions.push(
         -4.0, -4.0,
-         4.0, -4.0,
+        -2.7, -2.8,
+        -1.7, -1.6,
+        -0.75, -0.35,
+         0.75, -0.35,
+         1.7, -1.6,
+         2.7, -2.8,
+         4.0, -4.0
+    );
 
-        -2.8, -2.8,
-         2.8, -2.8,
-
-        -1.7, -1.5,
-         1.7, -1.5,
-
-        -0.85, -0.45,
-         0.85, -0.45
+    colors.push(
+        0.55, 0.0, 0.0, 1.0,
+        0.65, 0.0, 0.0, 1.0,
+        0.78, 0.0, 0.0, 1.0,
+        0.95, 0.05, 0.0, 1.0,
+        0.95, 0.05, 0.0, 1.0,
+        0.78, 0.0, 0.0, 1.0,
+        0.65, 0.0, 0.0, 1.0,
+        0.55, 0.0, 0.0, 1.0
     );
 
     for (var i = 0; i < volcanoCount; i++)
     {
         velocities.push(0.0, 0.0);
         accelerations.push(0.0, 0.0);
-
-        colors.push(
-            1.0, 0.0, 0.0, 1.0
-        );
-
         startTimes.push(0.0);
         types.push(0.0);
     }
@@ -226,66 +239,42 @@ function randomRange(min, max)
 
 function uploadData()
 {
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        positionBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(positions),
         gl.STATIC_DRAW
     );
 
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        velocityBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, velocityBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(velocities),
         gl.STATIC_DRAW
     );
 
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        accelerationBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, accelerationBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(accelerations),
         gl.STATIC_DRAW
     );
 
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        colorBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(colors),
         gl.STATIC_DRAW
     );
 
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        startTimeBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, startTimeBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(startTimes),
         gl.STATIC_DRAW
     );
 
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        typeBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, typeBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(types),
@@ -329,7 +318,7 @@ function render()
 function drawVolcano()
 {
     gl.drawArrays(
-        gl.TRIANGLE_STRIP,
+        gl.TRIANGLE_FAN,
         0,
         volcanoCount
     );
@@ -356,11 +345,7 @@ function drawParticles()
 
 function setAttributes()
 {
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        positionBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.vertexAttribPointer(
         positionLoc,
         2,
@@ -369,15 +354,9 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(positionLoc);
 
-
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        velocityBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, velocityBuffer);
     gl.vertexAttribPointer(
         velocityLoc,
         2,
@@ -386,15 +365,9 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(velocityLoc);
 
-
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        accelerationBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, accelerationBuffer);
     gl.vertexAttribPointer(
         accelerationLoc,
         2,
@@ -403,15 +376,9 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(accelerationLoc);
 
-
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        colorBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.vertexAttribPointer(
         colorLoc,
         4,
@@ -420,15 +387,9 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(colorLoc);
 
-
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        startTimeBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, startTimeBuffer);
     gl.vertexAttribPointer(
         startTimeLoc,
         1,
@@ -437,15 +398,9 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(startTimeLoc);
 
-
-    gl.bindBuffer(
-        gl.ARRAY_BUFFER,
-        typeBuffer
-    );
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, typeBuffer);
     gl.vertexAttribPointer(
         typeLoc,
         1,
@@ -454,7 +409,6 @@ function setAttributes()
         0,
         0
     );
-
     gl.enableVertexAttribArray(typeLoc);
 }
 
@@ -507,7 +461,6 @@ function initShaders()
         }
     `;
 
-
     var fragmentShaderSource = `
         precision mediump float;
 
@@ -518,7 +471,6 @@ function initShaders()
             gl_FragColor = fColor;
         }
     `;
-
 
     var vertexShader =
         compileShader(
@@ -534,20 +486,11 @@ function initShaders()
 
     program = gl.createProgram();
 
-    gl.attachShader(
-        program,
-        vertexShader
-    );
-
-    gl.attachShader(
-        program,
-        fragmentShader
-    );
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
 
     gl.linkProgram(program);
-
     gl.useProgram(program);
-
 
     positionLoc =
         gl.getAttribLocation(
@@ -585,7 +528,6 @@ function initShaders()
             "vType"
         );
 
-
     timeLoc =
         gl.getUniformLocation(
             program,
@@ -597,7 +539,6 @@ function initShaders()
             program,
             "uMatrix"
         );
-
 
     var matrix =
         scale4x4(
