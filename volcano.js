@@ -36,24 +36,14 @@ var volcanoCount = 5;
 var startTime;
 
 
-// ========================================
 // Initialize WebGL
-// ========================================
-
 window.onload = function init()
 {
     var canvas = document.getElementById("gl-canvas");
 
     gl = canvas.getContext("webgl");
 
-    if (!gl)
-    {
-        alert("WebGL is not available");
-        return;
-    }
-
     gl.viewport(0, 0, canvas.width, canvas.height);
-
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     initShaders();
@@ -86,13 +76,9 @@ window.onload = function init()
 };
 
 
-// ========================================
-// Create Volcano
-// ========================================
-
+// Create a simple straight-line volcano
 function createVolcano()
 {
-    // Center of the mountain.
     positions.push(
         0.0, -4.0
     );
@@ -101,7 +87,6 @@ function createVolcano()
         0.65, 0.0, 0.0, 1.0
     );
 
-    // Simple straight-line mountain shape.
     positions.push(
         -4.0, -4.0,
         -0.8,  0.0,
@@ -109,7 +94,6 @@ function createVolcano()
          4.0, -4.0
     );
 
-    // One solid color for the whole volcano.
     colors.push(
         0.65, 0.0, 0.0, 1.0,
         0.65, 0.0, 0.0, 1.0,
@@ -127,16 +111,10 @@ function createVolcano()
 }
 
 
-// ========================================
-// Create Particles
-// ========================================
-
+// Create the two particle types
 function createParticles()
 {
-    // ----------------------------------------
-    // Streamer particles
-    // ----------------------------------------
-
+    // Smoke particles
     for (var i = 0; i < streamerCount; i++)
     {
         positions.push(
@@ -167,11 +145,7 @@ function createParticles()
         types.push(1.0);
     }
 
-
-    // ----------------------------------------
     // Ballistic particles
-    // ----------------------------------------
-
     for (var j = 0; j < ballisticCount; j++)
     {
         var angle =
@@ -216,19 +190,12 @@ function createParticles()
 }
 
 
-// ========================================
 // Random number
-// ========================================
-
 function randomRange(min, max)
 {
     return min + Math.random() * (max - min);
 }
 
-
-// ========================================
-// Upload Data
-// ========================================
 
 function uploadData()
 {
@@ -276,10 +243,6 @@ function uploadData()
 }
 
 
-// ========================================
-// Render
-// ========================================
-
 function render()
 {
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -304,10 +267,6 @@ function render()
 }
 
 
-// ========================================
-// Draw Volcano
-// ========================================
-
 function drawVolcano()
 {
     gl.drawArrays(
@@ -318,10 +277,6 @@ function drawVolcano()
 }
 
 
-// ========================================
-// Draw Particles
-// ========================================
-
 function drawParticles()
 {
     gl.drawArrays(
@@ -331,10 +286,6 @@ function drawParticles()
     );
 }
 
-
-// ========================================
-// Set Attributes
-// ========================================
 
 function setAttributes()
 {
@@ -406,10 +357,7 @@ function setAttributes()
 }
 
 
-// ========================================
-// Initialize Shaders
-// ========================================
-
+// Motion is calculated in the vertex shader
 function initShaders()
 {
     var vertexShaderSource = `
@@ -548,10 +496,6 @@ function initShaders()
 }
 
 
-// ========================================
-// Compile Shader
-// ========================================
-
 function compileShader(type, source)
 {
     var shader =
@@ -563,18 +507,6 @@ function compileShader(type, source)
     );
 
     gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(
-        shader,
-        gl.COMPILE_STATUS
-    ))
-    {
-        console.log(
-            gl.getShaderInfoLog(shader)
-        );
-
-        return null;
-    }
 
     return shader;
 }
