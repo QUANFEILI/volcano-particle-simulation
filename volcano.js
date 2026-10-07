@@ -1,3 +1,4 @@
+
 "use strict";
 
 var gl;
@@ -29,8 +30,8 @@ var types = [];
 
 var startSimulation = false;
 
-var streamerCount = 600;
-var ballisticCount = 300;
+var streamerCount = 900;
+var ballisticCount = 700;
 var volcanoCount = 4;
 
 var startTime;
@@ -127,23 +128,24 @@ function createParticles()
     for (var i = 0; i < streamerCount; i++)
     {
         positions.push(
-            randomRange(-0.20, 0.20),
+            randomRange(-0.18, 0.18),
             0.0
         );
 
         velocities.push(
-            randomRange(-0.15, 0.15),
-            randomRange(0.65, 1.05)
+            randomRange(-0.20, 0.20),
+            randomRange(1.1, 1.8)
         );
 
+        // Smoke is not affected by gravity.
         accelerations.push(
             0.0, 0.0
         );
 
         colors.push(
-            randomRange(0.65, 0.95),
-            randomRange(0.65, 0.95),
-            randomRange(0.65, 0.95),
+            randomRange(0.70, 0.90),
+            randomRange(0.70, 0.90),
+            randomRange(0.70, 0.90),
             1.0
         );
 
@@ -161,18 +163,31 @@ function createParticles()
 
     for (var j = 0; j < ballisticCount; j++)
     {
+        var angle =
+            randomRange(
+                45.0,
+                135.0
+            ) * Math.PI / 180.0;
+
+        var speed =
+            randomRange(
+                2.2,
+                3.8
+            );
+
         positions.push(
-            randomRange(-0.15, 0.15),
+            randomRange(-0.12, 0.12),
             0.0
         );
 
         velocities.push(
-            randomRange(-1.7, 1.7),
-            randomRange(1.0, 2.2)
+            Math.cos(angle) * speed,
+            Math.sin(angle) * speed
         );
 
+        // Gravity pulls the ballistic particles down.
         accelerations.push(
-            0.0, -1.0
+            0.0, -2.0
         );
 
         colors.push(
@@ -183,7 +198,7 @@ function createParticles()
         );
 
         startTimes.push(
-            randomRange(0.0, 3.0)
+            randomRange(0.0, 4.0)
         );
 
         types.push(2.0);
@@ -288,7 +303,10 @@ function render()
         var time =
             (performance.now() - startTime) / 1000.0;
 
-        gl.uniform1f(timeLoc, time);
+        gl.uniform1f(
+            timeLoc,
+            time
+        );
 
         setAttributes();
 
@@ -479,11 +497,12 @@ function initShaders()
                 uMatrix *
                 vec4(position, 0.0, 1.0);
 
-            gl_PointSize = 4.0;
+            gl_PointSize = 3.0;
 
             fColor = vColor;
         }
     `;
+
 
     var fragmentShaderSource = `
         precision mediump float;
@@ -495,6 +514,7 @@ function initShaders()
             gl_FragColor = fColor;
         }
     `;
+
 
     var vertexShader =
         compileShader(
