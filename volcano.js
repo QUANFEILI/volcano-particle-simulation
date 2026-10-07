@@ -1,4 +1,3 @@
-
 "use strict";
 
 var gl;
@@ -32,7 +31,7 @@ var startSimulation = false;
 
 var streamerCount = 900;
 var ballisticCount = 700;
-var volcanoCount = 4;
+var volcanoCount = 8;
 
 var startTime;
 
@@ -95,9 +94,16 @@ function createVolcano()
 {
     positions.push(
         -4.0, -4.0,
-        -0.20,  0.0,
-         0.20,  0.0,
-         4.0, -4.0
+         4.0, -4.0,
+
+        -2.8, -2.8,
+         2.8, -2.8,
+
+        -1.7, -1.5,
+         1.7, -1.5,
+
+        -0.85, -0.45,
+         0.85, -0.45
     );
 
     for (var i = 0; i < volcanoCount; i++)
@@ -137,7 +143,6 @@ function createParticles()
             randomRange(1.1, 1.8)
         );
 
-        // Smoke is not affected by gravity.
         accelerations.push(
             0.0, 0.0
         );
@@ -165,8 +170,8 @@ function createParticles()
     {
         var angle =
             randomRange(
-                45.0,
-                135.0
+                50.0,
+                130.0
             ) * Math.PI / 180.0;
 
         var speed =
@@ -185,7 +190,6 @@ function createParticles()
             Math.sin(angle) * speed
         );
 
-        // Gravity pulls the ballistic particles down.
         accelerations.push(
             0.0, -2.0
         );
@@ -581,6 +585,7 @@ function initShaders()
             "vType"
         );
 
+
     timeLoc =
         gl.getUniformLocation(
             program,
@@ -594,7 +599,6 @@ function initShaders()
         );
 
 
-    // World coordinates to NDC.
     var matrix =
         scale4x4(
             0.25,
